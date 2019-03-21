@@ -22,9 +22,9 @@ class StudentController extends Controller
         Log::info('Listou os Usuários');
 
         if ($request->query('includes') === 'classroom') {
-            $students = Student::with('classroom')->paginate(1);
+            $students = Student::with('classroom')->paginate(2);
         } else {
-            $students = Student::paginate(1);
+            $students = Student::paginate(2);
         }
         return (new StudentCollection($students))
                     ->response()

@@ -20,7 +20,7 @@ class Students extends ResourceCollection
         return [
             'data' => $this->collection,
             'links' => [
-                'self' => 'school'
+                'create' => route('students.store')
             ]
         ];
     }
