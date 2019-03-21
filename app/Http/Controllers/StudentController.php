@@ -29,10 +29,20 @@ class StudentController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
+     * HTTP_CREATED => 201
+     * HTTP_INTERNAL_SERVER_ERROR => 500
      */
     public function store(Request $request)
     {
-        dd($request->input('name'));
+        try{
+            $strudent = Student::create($request->all());
+
+            return response()->json($strudent, 201);
+        }catch (\Throwable $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -60,10 +70,27 @@ class StudentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     * HTTP_NOT_FOUND => 404
+     * HTTP_INTERNAL_SERVER_ERROR => 500
      */
     public function update(Request $request, $id)
     {
-        //
+        $student = Student::find($id);
+
+        if(!$student){
+            return response()->json(['message' => 'Student not found'], 404);
+        }
+
+        try{
+            $student->update($request->all());
+
+            return [];
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -71,9 +98,27 @@ class StudentController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     * HTTP_NOT_FOUND => 404
+     * HTTP_INTERNAL_SERVER_ERROR => 500
      */
     public function destroy($id)
     {
         //
+        $student = Student::find($id);
+
+        if(!$student) {
+            return response()->json(['message' => 'Student not found'], 404);
+        }
+
+        try{
+            $student->delete();
+
+            return [];
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
