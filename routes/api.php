@@ -23,3 +23,6 @@ Route::get('/students/{student}', 'StudentController@show');
 Route::post('/students', 'StudentController@store');
 Route::put('/students/{student}', 'StudentController@update');
 Route::delete('/students/{student}', 'StudentController@destroy');
+
+//generate all routes
+Route::apiResource('classrooms', 'ClassroomController');

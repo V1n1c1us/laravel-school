@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Student;
 use App\Http\Requests\StudentRequest;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\Student as StudentResource;
+use App\Http\Resources\Students as StudentCollection;
 
 class StudentController extends Controller
 {
@@ -15,15 +17,18 @@ class StudentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         Log::info('Listou os Usuários');
 
-        $students = Student::get()->toArray();
-        dd($students);
-
-        return response()->json($students, Response::HTTP_OK);
-       //return response(Student::all(), '200')->header('Content-Type','text/html', true);
+        if ($request->query('includes') === 'classroom') {
+            $students = Student::with('classroom')->paginate(1);
+        } else {
+            $students = Student::paginate(1);
+        }
+        return (new StudentCollection($students))
+                    ->response()
+                    ->setStatusCode(Response::HTTP_OK);
     }
 
     /**
@@ -45,10 +50,11 @@ class StudentController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     * Pega o student vindo do banco, formata ele e retorna o array
      */
     public function show(Student $student)
     {
-        return $student;
+        return new StudentResource($student);
     }
 
     /**
