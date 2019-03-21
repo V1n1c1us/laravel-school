@@ -19,12 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::get('/students', 'StudentController@index');
-Route::get('/student/{id}', 'StudentController@show');
+Route::get('/students/{student}', 'StudentController@show');
 Route::post('/students', 'StudentController@store');
 Route::put('/students/{student}', 'StudentController@update');
 Route::delete('/students/{student}', 'StudentController@destroy');
-
-
-Route::get('/teste', function() {
-    return "olá mundo";
-});

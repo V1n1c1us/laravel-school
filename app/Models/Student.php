@@ -12,4 +12,8 @@ class Student extends Model
     public function classroom(){
         return $this->belongsTo(Classroom::class);
     }
+
+    protected $casts = [
+        'birth' => 'date:d/m/Y'
+    ];
 }

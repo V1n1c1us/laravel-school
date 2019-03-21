@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Student;
+use App\Http\Requests\StudentRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class StudentController extends Controller
@@ -18,7 +19,8 @@ class StudentController extends Controller
     {
         Log::info('Listou os Usuários');
 
-        $students = Student::all();
+        $students = Student::get()->toArray();
+        dd($students);
 
         return response()->json($students, Response::HTTP_OK);
        //return response(Student::all(), '200')->header('Content-Type','text/html', true);
@@ -29,20 +31,13 @@ class StudentController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
-     * HTTP_CREATED => 201
-     * HTTP_INTERNAL_SERVER_ERROR => 500
+     * Validator error => 422
      */
-    public function store(Request $request)
+    public function store(StudentRequest $request)
     {
-        try{
-            $strudent = Student::create($request->all());
+        Log::info('Cadastrado com Sucesso');
 
-            return response()->json($strudent, 201);
-        }catch (\Throwable $e) {
-            return response()->json([
-                'message' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return Student::create($request->all());
     }
 
     /**
@@ -50,75 +45,37 @@ class StudentController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
-     * HPPT_FOUND 302 => Found
-     * HTTP_NOT_FOUND 404 => Not Found
      */
-    public function show($id)
+    public function show(Student $student)
     {
-        $student = Student::find($id);
-
-        if($student) {
-            return response()->json($student, 302);
-        }
-
-        return response()->json(['message' => 'Student not found'], 404);
+        return $student;
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param Student $student = $id
      * @return \Illuminate\Http\Response
-     * HTTP_NOT_FOUND => 404
-     * HTTP_INTERNAL_SERVER_ERROR => 500
+     * Student $student = $id
      */
-    public function update(Request $request, $id)
+    public function update(StudentRequest $request, Student $student)
     {
-        $student = Student::find($id);
+        $student->update($request->all());
 
-        if(!$student){
-            return response()->json(['message' => 'Student not found'], 404);
-        }
-
-        try{
-            $student->update($request->all());
-
-            return [];
-
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return [];
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Student $student = $id
      * @return \Illuminate\Http\Response
-     * HTTP_NOT_FOUND => 404
-     * HTTP_INTERNAL_SERVER_ERROR => 500
      */
-    public function destroy($id)
+    public function destroy(Student $student)
     {
-        //
-        $student = Student::find($id);
+        $student->delete();
 
-        if(!$student) {
-            return response()->json(['message' => 'Student not found'], 404);
-        }
-
-        try{
-            $student->delete();
-
-            return [];
-
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return [];
     }
 }
